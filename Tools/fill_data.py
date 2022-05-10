@@ -17,8 +17,11 @@ zipcodes: dict[str, tuple[str, str]] = {}
 # Get Info from USPS API using ZipCode
 @lru_cache(maxsize=None)
 def usps_get_zip_info(zipcode: str) -> tuple[str, str]:
+    # Return Reponse from Cache if Available
     if zipcode in zipcodes:
         return zipcodes[zipcode]
+
+    # Request & Parse Response from USPS API
     print('Fetching City/State for {}...'.format(zipcode))
     request = f"<CityStateLookupRequest USERID=\"{USPS_API_KEY}\"><ZipCode ID='0'><Zip5>{zipcode}</Zip5></ZipCode></CityStateLookupRequest>"
     response = requests.get(ENDPOINT_USPS_ZIP + request)
@@ -28,15 +31,20 @@ def usps_get_zip_info(zipcode: str) -> tuple[str, str]:
         return ('', '')
     else:
         print('Found: City={} State={}'.format(split.group(2), split.group(3)))
+
+        # Cache Response (To Reduce API Calls)
         zipcodes[zipcode] = (split.group(2), split.group(3))
         with open (ZIPCODE_PICKLE_LOCATION, 'wb') as f:
             pickle.dump(zipcodes, f, protocol=pickle.HIGHEST_PROTOCOL)
+
+    # Return Response from API
     return (split.group(2), split.group(3))
 
 # Get Info from USPS API using ZipCode
 @lru_cache(maxsize=None)
 def usps_get_add_info(addr: str, city: str, state: str) -> tuple[str, str, str]:
-    # print('Fetching ZipCode for {}, {}, {}...'.format(addr, city, state))
+    # Request & Parse Response from USPS API
+    print('Fetching ZipCode for {}, {}, {}...'.format(addr, city, state))
     request = f"<ZipCodeLookupRequest USERID=\"{USPS_API_KEY}\"><Address ID=\"1\"><Address2>{addr}</Address2><City>{city}</City><State>{state}</State></Address></ZipCodeLookupRequest>"
     response = requests.get(ENDPOINT_USPS_ADD + request)
     split = re.search("<Address2>(.*)</Address2><City>(.*)</City><State>(.*)</State><Zip5>(.*)</Zip5>", response.text)
@@ -45,6 +53,8 @@ def usps_get_add_info(addr: str, city: str, state: str) -> tuple[str, str, str]:
         return (city, state, '')
     else:
         print('Found: Addr={}, City={} State={} ZipCode={}'.format(split.group(1), split.group(2), split.group(3), split.group(4)))
+
+    # Return Response from API
     return (split.group(2), split.group(3), split.group(4))
 
 # Fill in Data
@@ -54,7 +64,8 @@ if __name__ == "__main__":
         print("Missing Command-Line Arguments\n" +
         "Usage: python3 fill_data.py <Input File: CSV> <Output File: CSV>")
         sys.exit("Exiting...")
-    
+
+    # Load Cached ZipCodes (To Reduce API Calls)
     with open(ZIPCODE_PICKLE_LOCATION, 'rb') as f:
         zipcodes = pickle.load(f)
 
