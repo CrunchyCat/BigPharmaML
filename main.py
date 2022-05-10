@@ -3,11 +3,12 @@
 
 import numpy as np
 import pandas as pd
+from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
 from sklearn import linear_model
 # import matplotlib.pyplot as plt
 
-NUM_ITERATIONS = 600 # Number of Times to Run the Model to Avg Accuracy
+NUM_ITERATIONS = 5 # Number of Times to Run the Model to Avg Accuracy
 
 if __name__ == "__main__":
     df_pharmacies = pd.read_csv('./Data/Pharmacy-County.csv').dropna(thresh=3)
@@ -50,11 +51,13 @@ if __name__ == "__main__":
     ########################################################################################################################
 
     # Initialize Models
-    regr = linear_model.LinearRegression()
+    regr = RandomForestRegressor()
 
     # Predict Cardiovascular Disease Diabetes from Age Demographics
-    X = df_demographics[['Prevalence of obesity', 'HIV/AIDS', 'HISPANIC', 'MULT_RACE', 'ASIAN', 'cvd_100k', 'hypertension_100k', 'Temp']]
-    y = df_demographics['AGE_85_UP']
+    df_cut = df_demographics[['AGE_75_84', 'Prevalence of obesity', 'HIV/AIDS', 'WHITE', 'BLACK', 'AMERI_ES', 'ASIAN', 'HAWN_PI', 'HISPANIC', 'OTHER', 'MULT_RACE', 'cvd_100k', 'hypertension_100k', 'Temp']]
+    df_demo_filt = df_cut[df_cut.all(1)] # Remove Negative Values
+    X = df_demo_filt[['Prevalence of obesity', 'HIV/AIDS', 'WHITE', 'BLACK', 'AMERI_ES', 'ASIAN', 'HAWN_PI', 'HISPANIC', 'OTHER', 'MULT_RACE', 'cvd_100k', 'hypertension_100k', 'Temp']]
+    y = df_demo_filt['AGE_75_84']
 
     sum_score = 0.0
     for i in range(NUM_ITERATIONS):
