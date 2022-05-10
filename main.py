@@ -7,11 +7,11 @@ from sklearn.model_selection import train_test_split
 from sklearn import linear_model
 # import matplotlib.pyplot as plt
 
-NUM_ITERATIONS = 80 # Number of Times to Run the Model to Avg Accuracy
+NUM_ITERATIONS = 600 # Number of Times to Run the Model to Avg Accuracy
 
 if __name__ == "__main__":
     df_pharmacies = pd.read_csv('./Data/Pharmacy-County.csv').dropna(thresh=3)
-    df_demographics = pd.read_csv('./Data/Demography_USA_Normalized.csv').dropna(thresh=3)
+    df_demographics = pd.read_csv('./Data/Demography_USA_Normalized_Clean.csv').dropna(thresh=3)
 
     # Collect Metadata
     list_states = df_pharmacies['State'].unique()
@@ -29,7 +29,7 @@ if __name__ == "__main__":
     print('{:<40}{:>40}'.format('Total # of Cities:', len(list_cities)))
     print('{:<40}{:>40}'.format('Total # of Pharmacies:', len(df_pharmacies)))
 
-    print('{:<40}{:>40}'.format('\nAverage Population % with Diabetes: ', df_demographics['Diabetes'].value_counts()))
+    print('{:<40}{:>40}'.format('\nAverage Population % with Diabetes: ', df_demographics['Diabetes'].min()))
 
     ########################################################################################################################
     # Normalized Features:
@@ -53,8 +53,8 @@ if __name__ == "__main__":
     regr = linear_model.LinearRegression()
 
     # Predict Cardiovascular Disease Diabetes from Age Demographics
-    X = df_demographics[['AGE_35_44', 'AGE_45_54', 'AGE_55_64', 'AGE_75_84', 'AGE_85_UP']]
-    y = df_demographics['Diabetes']
+    X = df_demographics[['Prevalence of obesity', 'HIV/AIDS', 'HISPANIC', 'MULT_RACE', 'ASIAN', 'cvd_100k', 'hypertension_100k', 'Temp']]
+    y = df_demographics['AGE_85_UP']
 
     sum_score = 0.0
     for i in range(NUM_ITERATIONS):
@@ -66,4 +66,4 @@ if __name__ == "__main__":
         # Predit the Test Data
         sum_score += regr.score(X_test, y_test)
 
-    print('Score', sum_score / NUM_ITERATIONS)
+    print('{:<40}{:>40}'.format('Predicting Population 85+ %:', sum_score / NUM_ITERATIONS))
