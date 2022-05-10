@@ -12,6 +12,13 @@ if __name__ == "__main__":
 
     # Collect Metadata
     list_states = df_pharmacies['State'].unique()
+    list_cities = df_pharmacies.drop_duplicates(subset=['State', 'City'])
 
     # Print Metadata
-    print('Data Collected for {} States: {}'.format(len(list_states), list_states))
+    print("------------------------------------OVERVIEW------------------------------------")
+    print(df_pharmacies[['City','State']].value_counts())
+    print('{:<40}{:>40}'.format('\nAverage # of Pharmacies per City: ', df_pharmacies[['City','State']].value_counts().mean()))
+    print('{:<40}{:>40}'.format('Total # of States/Territories:', len(list_states)))
+    print('{:<20}{:>60}'.format('States/Territories:', ','.join(list_states)))
+    print('{:<40}{:>40}'.format('Total # of Cities:', len(list_cities)))
+    print('{:<40}{:>40}'.format('Total # of Pharmacies:', len(df_pharmacies)))
