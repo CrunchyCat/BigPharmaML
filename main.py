@@ -9,3 +9,9 @@ import matplotlib.pyplot as plt
 if __name__ == "__main__":
     df_pharmacies = pd.read_csv('./Data/Pharmacy-County.csv').dropna(thresh=3)
     df_demographics = pd.read_csv('./Data/Demography_USA.csv').dropna(thresh=3)
+
+    # Collect Metadata
+    list_states = df_pharmacies['State'].unique()
+
+    # Print Metadata
+    print('Data Collected for {} States: {}'.format(len(list_states), list_states))

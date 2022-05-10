@@ -16,7 +16,7 @@ zipcodes: dict[str, tuple[str, str]] = {}
 
 # Get Info from USPS API using ZipCode
 @lru_cache(maxsize=None)
-def usps_get_zip_info(zipcode: str) -> tuple[str, str]:
+def usps_get_zip_info(city: str, state: str, zipcode: str) -> tuple[str, str]:
     # Return Reponse from Cache if Available
     if zipcode in zipcodes:
         return zipcodes[zipcode]
@@ -28,7 +28,7 @@ def usps_get_zip_info(zipcode: str) -> tuple[str, str]:
     split = re.search("<Zip5>(.*)</Zip5><City>(.*)</City><State>(.*)</State>", response.text)
     if split is None:
         print('Failed to fetch info for {}'.format(zipcode))
-        return ('', '')
+        return (city, state)
     else:
         print('Found: City={} State={}'.format(split.group(2), split.group(3)))
 
@@ -101,9 +101,9 @@ if __name__ == "__main__":
                 if len(csv_zip) < 4:                                # If Zipcode is Too Short/Missing, use Address
                     csv_city, csv_state, csv_zip = usps_get_add_info(csv_addr, csv_city, csv_state)
                 else:
-                    if len(csv_zip) == 4:                               # ZipCode needs Extra 0
+                    if len(csv_zip) == 4 or len(csv_zip) == 8:          # ZipCode needs Extra 0
                         csv_zip = '0' + csv_zip
                     if len(csv_zip) > 4:                                # Get City/State from ZipCode
-                        csv_city, csv_state = usps_get_zip_info(csv_zip[:5])
+                        csv_city, csv_state = usps_get_zip_info(csv_city, csv_state, csv_zip[:5])
 
                 writer.writerow([csv_state, row[1], csv_addr, csv_addr2, csv_city, csv_zip, row[6], row[7]])
