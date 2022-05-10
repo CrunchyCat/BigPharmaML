@@ -7,7 +7,5 @@ from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 
 if __name__ == "__main__":
-    df_pharmacies = pd.read_csv('./Data/Pharmacy-County.csv')
-
-    # Drop Rows with Fewer than 3 Columns
-    df_pharmacies = df_pharmacies.dropna(thresh=3)
+    df_pharmacies = pd.read_csv('./Data/Pharmacy-County.csv').dropna(thresh=3)
+    df_demographics = pd.read_csv('./Data/Demography_USA.csv').dropna(thresh=3)
