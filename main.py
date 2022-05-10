@@ -54,6 +54,23 @@ if __name__ == "__main__":
     regr = RandomForestRegressor()
 
     # Predict Cardiovascular Disease Diabetes from Age Demographics
+    df_cut = df_demographics[['Diabetes', 'AGE_75_84', 'Prevalence of obesity', 'HIV/AIDS', 'WHITE', 'BLACK', 'AMERI_ES', 'ASIAN', 'HAWN_PI', 'HISPANIC', 'OTHER', 'MULT_RACE', 'cvd_100k', 'hypertension_100k', 'Temp']]
+    df_demo_filt = df_cut[df_cut.all(1)] # Remove Negative Values
+    X = df_demo_filt[['AGE_75_84', 'Prevalence of obesity', 'HIV/AIDS', 'WHITE', 'BLACK', 'AMERI_ES', 'ASIAN', 'HAWN_PI', 'HISPANIC', 'OTHER', 'MULT_RACE', 'cvd_100k', 'hypertension_100k', 'Temp']]
+    y = df_demo_filt['Diabetes']
+
+    sum_score = 0.0
+    for i in range(NUM_ITERATIONS):
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.3)
+
+        # Fit the Model
+        regr.fit(X_train, y_train)
+
+        # Predit the Test Data
+        sum_score += regr.score(X_test, y_test)
+    print('{:<40}{:>40}'.format('Predicting % Diabetes in Population:', sum_score / NUM_ITERATIONS))
+
+    # Predict Cardiovascular Disease Diabetes from Age Demographics
     df_cut = df_demographics[['AGE_75_84', 'Prevalence of obesity', 'HIV/AIDS', 'WHITE', 'BLACK', 'AMERI_ES', 'ASIAN', 'HAWN_PI', 'HISPANIC', 'OTHER', 'MULT_RACE', 'cvd_100k', 'hypertension_100k', 'Temp']]
     df_demo_filt = df_cut[df_cut.all(1)] # Remove Negative Values
     X = df_demo_filt[['Prevalence of obesity', 'HIV/AIDS', 'WHITE', 'BLACK', 'AMERI_ES', 'ASIAN', 'HAWN_PI', 'HISPANIC', 'OTHER', 'MULT_RACE', 'cvd_100k', 'hypertension_100k', 'Temp']]
@@ -68,5 +85,4 @@ if __name__ == "__main__":
 
         # Predit the Test Data
         sum_score += regr.score(X_test, y_test)
-
     print('{:<40}{:>40}'.format('Predicting Population 85+ %:', sum_score / NUM_ITERATIONS))
