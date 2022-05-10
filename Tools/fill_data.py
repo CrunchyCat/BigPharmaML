@@ -71,7 +71,7 @@ if __name__ == "__main__":
 
     # Initialize Writer to stdout
     with open(sys.argv[2], 'w') as f_out:
-        writer = csv.writer(f_out, dialect='unix')
+        writer = csv.writer(f_out, dialect='unix', quoting=csv.QUOTE_MINIMAL)
 
         # Read CSV & Fill in Data from USPS API
         with open(sys.argv[1], 'r') as f_in:
