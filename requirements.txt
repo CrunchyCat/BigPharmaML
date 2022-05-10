@@ -1,0 +1,7 @@
+# Tools/fill_data.py: Filling in Data with USPS API
+requests
+
+# main.py: For Machine Learning Tasks
+numpy
+pandas
+sklearn
